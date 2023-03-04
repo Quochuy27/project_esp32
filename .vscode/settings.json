@@ -1,0 +1,9 @@
+{
+    "idf.portWin": "COM5",
+    "idf.flashType": "UART",
+    "idf.adapterTargetName": "esp32",
+    "files.associations": {
+        "*.json": "c",
+        "nvs_flash.h": "c"
+    }
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Embedded System Programming - Group 2</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  </head>
+  <body>
+    <style>
+      body {
+        background-color: #dfe6e9;
+        font-family:'Times New Roman', Times, serif;
+        margin: 0px;
+        padding: 0px;
+      }
+      h1 {
+        background-color: #636e72;
+        padding: 15px ;
+        color: white;
+        margin: auto;
+      }
+
+      #sun {
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+        -webkit-transition: transform 0.4s;
+        transition: transform 0.4s;
+      }
+      .switch {
+        display: inline-block;
+        position: relative;
+        width: 60px;
+        height: 34px;
+        margin: -5px;
+      }
+
+      .switch input {
+        display: none;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        border-radius: 34px;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        border-radius: 50%;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+      .cloud {
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+        -webkit-transition: transform 0.4s;
+        transition: transform 0.4s;
+      }
+      .box {
+        width: 300px;
+        height: 150px;
+        background-color: #34ace0;
+        border-radius: 20px;
+        border: 5px solid #227093;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        font-size: 24px;
+        color: #fff;
+        text-align: left;
+        padding: 10px;
+      }
+      input:checked + .slider {
+        background-color: #2196f3;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196f3;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+      #align1{
+        position: absolute;
+        top:100px;
+        left:100px;
+      }
+      #align2{
+        position: absolute;
+        top:100px;
+        left:230px;
+      }
+      #align31{
+        position: absolute;
+        top:250px;
+        left:550px;
+      }
+      #align32{
+        position: absolute;
+        top:250px;
+        left:800px;
+      }
+      #align33{
+        position: absolute;
+        top:250px;
+        left:1050px;
+      }
+      #align34{
+        position: absolute;
+        top:350px;
+        left:700px;
+      }
+      #align35{
+        position: absolute;
+        top:350px;
+        left:900px;
+      }
+      #align4{
+        position: absolute;
+        top:400px;
+        left:70px;
+      }
+      #align5{
+        position: absolute;
+        top:110px;
+        left:215px;
+      }
+      hr{
+      width: 2px;
+      height: 150px;
+      background-color: black;
+      border-color: black;
+      border-radius: 15px;
+      }
+    </style>
+    <h1>Embedded System Programming - Group 2</h1>
+    <h2 id="align1">
+      Trời nắng<br />
+      <img id="sun" src="white.svg" alt="Sun" />
+    </h2>
+    <h2 id="align2">
+      Trời mưa<br />
+      <img id="cloud" class="cloud" src="cloud1.svg" />
+    </h2>
+    <hr id="align5">
+    <h2 id="align31">
+      <label class="switch">
+        <input type="checkbox" />
+        <span class="slider"></span>
+      </label>
+      Che nắng
+    </h2>
+    <h2 id="align32">
+      <label class="switch">
+        <input type="checkbox" />
+        <span class="slider"></span>
+      </label>
+      Che mưa
+    </h2>
+    <h2 id="align33">
+      <label class="switch">
+        <input type="checkbox" />
+        <span class="slider"></span>
+      </label>
+      Phun sương
+    </h2>
+    <h2 id="align34">
+      <label class="switch">
+        <input type="checkbox" />
+        <span class="slider"></span>
+      </label>
+      Bật đèn
+    </h2>
+    <h2 id="align35">
+      <label class="switch">
+        <input type="checkbox" />
+        <span class="slider"></span>
+      </label>
+      Cho ăn
+    </h2>
+    <div  id="align4" class="box">
+      Nhiệt độ: <br />
+      Độ ẩm: <br />
+      Thức ăn: <br />
+    </div>
+  </body>
+  <script>
+    const sun = document.querySelector("#sun");
+    let isNight = false;
+    sun.addEventListener("click", function () {
+      if (isNight) {
+        sun.setAttribute("src", "white.svg");
+        sun.style.transform = "rotate(0deg)";
+        isNight = false;
+      } else {
+        sun.setAttribute("src", "black.svg");
+        sun.style.transform = "rotate(180deg)";
+        isNight = true;
+      }
+    });
+    var cloud = document.getElementById("cloud");
+    var cloud1 = "cloud1.svg";
+    var cloud2 = "cloud2.svg";
+
+    cloud.onclick = function () {
+      if (cloud.getAttribute("src") == cloud1) {
+        cloud.setAttribute("src", cloud2);
+        cloud.style.transform = ease;
+      } else {
+        cloud.setAttribute("src", cloud1);
+      }
+    };
+  </script>
+</html>
