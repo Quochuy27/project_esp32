@@ -164,32 +164,37 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
      httpd_resp_set_type(req, "text/html");
      
     httpd_resp_send(req, (const char*)index_html_start , index_html_end-index_html_start);
-     httpd_resp_set_type(req, "image/svg+xml");
-    httpd_resp_send(req, (const char*)black_svg_start , black_svg_end-black_svg_start);
-    httpd_resp_send(req, (const char*)white_svg_start , white_svg_end-white_svg_start);
-    httpd_resp_send(req, (const char*)cloud1_svg_start , cloud1_svg_end-cloud1_svg_start);
-    httpd_resp_send(req, (const char*)cloud2_svg_start , cloud2_svg_end-cloud2_svg_start);
     return ESP_OK;
 }
-static esp_err_t echo_post_handler(httpd_req_t *req)
+static esp_err_t get_black_svg_handler(httpd_req_t *req)
 {
-    char buf[100];
-    printf("->");
-    httpd_req_recv(req, buf,req->content_len);
-    printf("data= %s\n",buf);
-    // End response
-    httpd_resp_send_chunk(req, NULL, 0);
+    httpd_resp_set_type(req, "image/svg+xml");
+    httpd_resp_send(req, (const char *)black_svg_start, black_svg_end - black_svg_start);
     return ESP_OK;
 }
+static esp_err_t get_white_svg_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "image/svg+xml");
+    httpd_resp_send(req, (const char *)white_svg_start, white_svg_end - white_svg_start);
+    return ESP_OK;
+}
+
+static esp_err_t get_cloud1_svg_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "image/svg+xml");
+    httpd_resp_send(req, (const char *)cloud1_svg_start, cloud1_svg_end - cloud1_svg_start);
+    return ESP_OK;
+}
+
+static esp_err_t get_cloud2_svg_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "image/svg+xml");
+    httpd_resp_send(req, (const char *)cloud2_svg_start, cloud2_svg_end - cloud2_svg_start);
+    return ESP_OK;
+}
+
+
 static const httpd_uri_t get_hello = {
-    .uri       = "/data",
-    .method    = HTTP_POST,
-    .handler   = echo_post_handler,
-    /* Let's pass response string in user
-     * context to demonstrate it's usage */
-    .user_ctx  = NULL
-};
-static const httpd_uri_t post_hello = {
     .uri       = "/chao",
     .method    = HTTP_GET,
     .handler   = hello_get_handler,
@@ -197,6 +202,37 @@ static const httpd_uri_t post_hello = {
      * context to demonstrate it's usage */
     .user_ctx  = NULL
 };
+httpd_uri_t black_svg_uri = {
+    .uri      = "/black.svg",
+    .method   = HTTP_GET,
+    .handler  = get_black_svg_handler,
+};
+
+
+
+httpd_uri_t white_svg_uri = {
+    .uri      = "/white.svg",
+    .method   = HTTP_GET,
+    .handler  = get_white_svg_handler,
+};
+
+
+
+httpd_uri_t cloud1_svg_uri = {
+    .uri      = "/cloud1.svg",
+    .method   = HTTP_GET,
+    .handler  = get_cloud1_svg_handler,
+};
+
+
+
+httpd_uri_t cloud2_svg_uri = {
+    .uri      = "/cloud2.svg",
+    .method   = HTTP_GET,
+    .handler  = get_cloud2_svg_handler,
+};
+
+
 
 // /* An HTTP POST handler */
 // static esp_err_t echo_post_handler(httpd_req_t *req)
@@ -320,7 +356,10 @@ esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
         httpd_register_uri_handler(server, &get_hello);
-        httpd_register_uri_handler(server, &post_hello);
+        httpd_register_uri_handler(server, &black_svg_uri);
+        httpd_register_uri_handler(server, &white_svg_uri);
+        httpd_register_uri_handler(server, &cloud1_svg_uri);
+        httpd_register_uri_handler(server, &cloud2_svg_uri);
         httpd_register_err_handler(server,HTTPD_404_NOT_FOUND,http_404_error_handler);
         // httpd_register_uri_handler(server, &echo);
         // httpd_register_uri_handler(server, &ctrl);
