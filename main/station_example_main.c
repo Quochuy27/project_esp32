@@ -18,14 +18,14 @@
 #include "http_server.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
-
+#include "dht11.h"
 /* The examples use WiFi configuration that you can set via project configuration menu
 
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-#define EXAMPLE_ESP_WIFI_SSID      "Yancoffee & Tea"
-#define EXAMPLE_ESP_WIFI_PASS      "Cherrytea"
+#define EXAMPLE_ESP_WIFI_SSID      "B08.08"
+#define EXAMPLE_ESP_WIFI_PASS      "tegiac2021"
 #define EXAMPLE_ESP_MAXIMUM_RETRY  CONFIG_ESP_MAXIMUM_RETRY
 
 #if CONFIG_ESP_WIFI_AUTH_OPEN
@@ -48,7 +48,7 @@
 
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
-
+static struct dht11_reading dht11_last_data , dht11_cur_data;
 /* The event group allows multiple bits for each event, but we only care about two events:
  * - we are connected to the AP with an IP
  * - we failed to connect after the maximum amount of retries */
@@ -146,9 +146,27 @@ void wifi_init_sta(void)
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
 }
+void switch_data_callback(char *data, uint16_t len){
+    gpio_set_direction(18,GPIO_MODE_OUTPUT);
+    
+    if(*data=='1')
+    {
+        gpio_set_level(18,1);
+    }
+    else if(*data=='0')
+    {
+        gpio_set_level(18,0);
+    }
 
+}
+void dht11_data_callback(void)
+{   
+    char resp[100];
+    sprintf(resp,"{\"temperature\": \"%f\",\"humidity\":\"%f\"}",dht11_last_data.temperature,dht11_last_data.humidity);
+    dht11_response(resp,strlen(resp));
+}
 void app_main(void)
-{
+{   
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -156,8 +174,21 @@ void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-
+    http_set_callback_switch(switch_data_callback);
+    http_set_callback_dht11(dht11_data_callback);
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
+        DHT11_init(GPIO_NUM_21);
+    
     wifi_init_sta();
     start_webserver();
+    while(1)
+    {
+        dht11_cur_data=DHT11_read();
+        if(dht11_cur_data.status==0)
+        {
+            dht11_last_data=dht11_cur_data;
+            printf("a=%lf\n",dht11_last_data.humidity );
+        }
+        vTaskDelay(500/portTICK_PERIOD_MS);
+    }
 }

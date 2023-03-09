@@ -150,6 +150,7 @@
       border-color: black;
       border-radius: 15px;
       }
+      .card { font-size:2 0px ; box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5); }
     </style>
     <h1>Embedded System Programming - Group 2</h1>
     <h2 id="align1">
@@ -190,19 +191,50 @@
       Bật đèn
     </h2>
     <h2 id="align35">
-      <label class="switch">
-        <input type="checkbox" />
+      <label class="switch" id="switch1">
+        <input type="checkbox" checked id="myCheck1" onclick="myfunction1()">
         <span class="slider"></span>
       </label>
       Cho ăn
     </h2>
     <div  id="align4" class="box">
-      Nhiệt độ: <br />
-      Độ ẩm: <br />
-      Thức ăn: <br />
+      <div class="cards">
+        <div class="card temperature">
+          <p class="card-title"> TEMPERATURE </p><span id="t1"></span> &deg;C</span> <span id="rt1"> </span></p>
+        </div>
+        <div class="card humidity">  
+          <p class="card-title"> HUMIDITY </p><span id="h1"></span> &percnt;</span> <span id="rH1"> </span></p>
+        </div>
+      </div>
     </div>
+    
   </body>
   <script>
+    
+    var xhttp1 = new XMLHttpRequest();
+    function myfunction1(){
+      var checkBox = document.getElementById("myCheck1");
+      if (checkBox.checked == true){
+        xhttp1.open("POST", "/switch1", true);
+        xhttp1.send("1");
+      }
+      else{
+        xhttp1.open("POST", "/switch1", true);
+        xhttp1.send("0");        
+      }       
+    }
+    xhttp1.onreadystatechange = function() {
+      const obj =JSON.parse( this.responseText);
+      var element1 = document.getElementById('t1');
+      element1.innerText = obj.temperature;
+      var element2 = document.getElementById('h1');
+      element2.innerText = obj.humidity; 
+    }
+    
+    setInterval(function() {
+      xhttp1.open("GET", "/dht11", true);
+      xhttp1.send();
+    }, 1000 );
     const sun = document.querySelector("#sun");
     let isNight = false;
     sun.addEventListener("click", function () {
@@ -230,3 +262,4 @@
     };
   </script>
 </html>
+  

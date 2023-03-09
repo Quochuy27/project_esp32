@@ -20,6 +20,7 @@
 // #include "protocol_examples_common.h"
 #include "esp_tls_crypto.h"
 #include <esp_http_server.h>
+#include "driver/gpio.h"
 
 /* A simple example that demonstrates how to create GET and POST
  * handlers for the web server.
@@ -27,6 +28,7 @@
 
 static const char *TAG = "example";
 static httpd_handle_t server = NULL;
+static httpd_req_t *reg;
 extern const uint8_t index_html_start[] asm("_binary_index_html_start");
 extern const uint8_t index_html_end[] asm("_binary_index_html_end");
 extern const uint8_t black_svg_start[] asm("_binary_black_svg_start");
@@ -37,7 +39,8 @@ extern const uint8_t cloud1_svg_start[] asm("_binary_cloud1_svg_start");
 extern const uint8_t cloud1_svg_end[] asm("_binary_cloud1_svg_end");
 extern const uint8_t cloud2_svg_start[] asm("_binary_cloud2_svg_start");
 extern const uint8_t cloud2_svg_end[] asm("_binary_cloud2_svg_end");
-
+static http_post_callback_t http_post_switch_callback =NULL;
+static http_get_callback_t  http_get_dht11_callback = NULL; 
 
 #if CONFIG_EXAMPLE_BASIC_AUTH
 
@@ -193,6 +196,28 @@ static esp_err_t get_cloud2_svg_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+static esp_err_t get_data_dht11_handler(httpd_req_t *req)
+{   
+    // const char* resp_str = (const char* ) "{\"temperature\": \"23.5\" ,\"humidity\": \"91\" }" ;
+    // // httpd_resp_set_type(req, "image/svg+xml");
+    // httpd_resp_send(req, resp_str, strlen(resp_str));
+    reg=req;
+    http_get_dht11_callback();
+    return ESP_OK;
+}
+void dht11_response(char *data, int len)
+{
+    httpd_resp_send(reg , data ,len);
+}
+
+static const httpd_uri_t get_dht11 = {
+    .uri       = "/dht11",
+    .method    = HTTP_GET,
+    .handler   = get_data_dht11_handler,
+    /* Let's pass response string in user
+     * context to demonstrate it's usage */
+    .user_ctx  = NULL
+};
 
 static const httpd_uri_t get_hello = {
     .uri       = "/chao",
@@ -235,7 +260,7 @@ httpd_uri_t cloud2_svg_uri = {
 
 
 // /* An HTTP POST handler */
-// static esp_err_t echo_post_handler(httpd_req_t *req)
+// static esp_err_t dara_post_handler(httpd_req_t *req)
 // {
 //     char buf[100];
 //     int ret, remaining = req->content_len;
@@ -265,13 +290,32 @@ httpd_uri_t cloud2_svg_uri = {
 //     httpd_resp_send_chunk(req, NULL, 0);
 //     return ESP_OK;
 // }
+static esp_err_t sw1_post_handler(httpd_req_t *req)
+{
+    char buf[100];
 
-// static const httpd_uri_t echo = {
-//     .uri       = "/echo",
-//     .method    = HTTP_POST,
-//     .handler   = echo_post_handler,
-//     .user_ctx  = NULL
-// };
+    // gpio_set_direction(19, GPIO_MODE_OUTPUT);
+
+    httpd_req_recv(req,buf,req->content_len);
+    http_post_switch_callback(buf,req->content_len);
+    // printf("a: %d \n", (int)buf[0]);
+    // if((int)buf[0]==48)
+    // {
+    //     gpio_set_level(19,0);
+    // }
+    // else if((int)buf[0]==49)
+    // {
+    //     gpio_set_level(19,1);
+    // }
+    httpd_resp_send_chunk(req ,NULL , 0);
+    return ESP_OK;    
+}
+static const httpd_uri_t sw1_post = {
+        .uri       = "/switch1",
+    .method    = HTTP_POST,
+    .handler   = sw1_post_handler,
+    .user_ctx  = NULL
+};
 
 /* This handler allows the custom error handling functionality to be
  * tested from client side. For that, when a PUT request 0 is sent to
@@ -360,6 +404,9 @@ esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
         httpd_register_uri_handler(server, &white_svg_uri);
         httpd_register_uri_handler(server, &cloud1_svg_uri);
         httpd_register_uri_handler(server, &cloud2_svg_uri);
+        httpd_register_uri_handler(server, &get_dht11);
+        httpd_register_uri_handler(server, &sw1_post);
+        
         httpd_register_err_handler(server,HTTPD_404_NOT_FOUND,http_404_error_handler);
         // httpd_register_uri_handler(server, &echo);
         // httpd_register_uri_handler(server, &ctrl);
@@ -379,5 +426,10 @@ void stop_webserver(void)
      httpd_stop(server);
 }
 
-
+void http_set_callback_switch (void *cb){
+    http_post_switch_callback = cb ;
+}
+void http_set_callback_dht11 (void *cb){
+    http_get_dht11_callback = cb;
+}
 

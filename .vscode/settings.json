@@ -4,6 +4,9 @@
     "idf.adapterTargetName": "esp32",
     "files.associations": {
         "*.json": "c",
-        "nvs_flash.h": "c"
+        "*.html": "html",
+        "nvs_flash.h": "c",
+        "esp_eth.h": "c",
+        "http_server.h": "c"
     }
 }
