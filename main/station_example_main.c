@@ -19,6 +19,8 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "dht11.h"
+#include "pwm.h"
+#include <math.h>
 /* The examples use WiFi configuration that you can set via project configuration menu
 
    If you'd rather not, just change the below entries to strings with
@@ -146,7 +148,20 @@ void wifi_init_sta(void)
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
 }
-void switch_data_callback(char *data, uint16_t len){
+void servo_data_callback(char *data, int len)
+{   
+    char str[10];
+    memcpy(str,data,len+1);
+    
+    int duty = atoi(str);
+    
+    pwm_timer_init(50);
+    pwm_chanel_config(GPIO_NUM_5,0);
+    pwm_set_duty(0,8.15*duty+205);
+    printf("%f \n",8.15*duty+205);
+}
+void switch_data_callback(char *data, uint16_t len)
+{
     gpio_set_direction(18,GPIO_MODE_OUTPUT);
     
     if(*data=='1')
@@ -162,7 +177,7 @@ void switch_data_callback(char *data, uint16_t len){
 void dht11_data_callback(void)
 {   
     char resp[100];
-    sprintf(resp,"{\"temperature\": \"%f\",\"humidity\":\"%f\"}",dht11_last_data.temperature,dht11_last_data.humidity);
+    sprintf(resp,"{\"temperature\": \"%.1f\",\"humidity\":\"%.1f\"}",dht11_last_data.temperature,dht11_last_data.humidity);
     dht11_response(resp,strlen(resp));
 }
 void app_main(void)
@@ -176,8 +191,9 @@ void app_main(void)
     ESP_ERROR_CHECK(ret);
     http_set_callback_switch(switch_data_callback);
     http_set_callback_dht11(dht11_data_callback);
+    http_set_callback_servo(servo_data_callback);
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
-        DHT11_init(GPIO_NUM_21);
+            DHT11_init(GPIO_NUM_4);
     
     wifi_init_sta();
     start_webserver();

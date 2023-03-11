@@ -39,9 +39,11 @@ extern const uint8_t cloud1_svg_start[] asm("_binary_cloud1_svg_start");
 extern const uint8_t cloud1_svg_end[] asm("_binary_cloud1_svg_end");
 extern const uint8_t cloud2_svg_start[] asm("_binary_cloud2_svg_start");
 extern const uint8_t cloud2_svg_end[] asm("_binary_cloud2_svg_end");
+extern const uint8_t logorm_start[] asm("_binary_logorm_png_start");
+extern const uint8_t logorm_end[] asm("_binary_logorm_png_end");
 static http_post_callback_t http_post_switch_callback =NULL;
 static http_get_callback_t  http_get_dht11_callback = NULL; 
-
+static http_post_callback_t http_post_servo_callback = NULL;
 #if CONFIG_EXAMPLE_BASIC_AUTH
 
 typedef struct {
@@ -175,6 +177,13 @@ static esp_err_t get_black_svg_handler(httpd_req_t *req)
     httpd_resp_send(req, (const char *)black_svg_start, black_svg_end - black_svg_start);
     return ESP_OK;
 }
+static esp_err_t logorm_get_handler(httpd_req_t *req)
+{
+     httpd_resp_set_type(req, "image/png");
+     
+    httpd_resp_send(req, (const char*)logorm_start , logorm_end-logorm_start);
+    return ESP_OK;
+}
 static esp_err_t get_white_svg_handler(httpd_req_t *req)
 {
     httpd_resp_set_type(req, "image/svg+xml");
@@ -198,9 +207,6 @@ static esp_err_t get_cloud2_svg_handler(httpd_req_t *req)
 
 static esp_err_t get_data_dht11_handler(httpd_req_t *req)
 {   
-    // const char* resp_str = (const char* ) "{\"temperature\": \"23.5\" ,\"humidity\": \"91\" }" ;
-    // // httpd_resp_set_type(req, "image/svg+xml");
-    // httpd_resp_send(req, resp_str, strlen(resp_str));
     reg=req;
     http_get_dht11_callback();
     return ESP_OK;
@@ -214,8 +220,7 @@ static const httpd_uri_t get_dht11 = {
     .uri       = "/dht11",
     .method    = HTTP_GET,
     .handler   = get_data_dht11_handler,
-    /* Let's pass response string in user
-     * context to demonstrate it's usage */
+
     .user_ctx  = NULL
 };
 
@@ -223,8 +228,14 @@ static const httpd_uri_t get_hello = {
     .uri       = "/chao",
     .method    = HTTP_GET,
     .handler   = hello_get_handler,
-    /* Let's pass response string in user
-     * context to demonstrate it's usage */
+
+    .user_ctx  = NULL
+};
+static const httpd_uri_t logorm_uri = {
+    .uri       = "/logorm.png",
+    .method    = HTTP_GET,
+    .handler   = logorm_get_handler,
+
     .user_ctx  = NULL
 };
 httpd_uri_t black_svg_uri = {
@@ -256,64 +267,32 @@ httpd_uri_t cloud2_svg_uri = {
     .method   = HTTP_GET,
     .handler  = get_cloud2_svg_handler,
 };
-
-
-
-// /* An HTTP POST handler */
-// static esp_err_t dara_post_handler(httpd_req_t *req)
-// {
-//     char buf[100];
-//     int ret, remaining = req->content_len;
-
-//     while (remaining > 0) {
-//         /* Read the data for the request */
-//         if ((ret = httpd_req_recv(req, buf,
-//                         MIN(remaining, sizeof(buf)))) <= 0) {
-//             if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
-//                 /* Retry receiving if timeout occurred */
-//                 continue;
-//             }
-//             return ESP_FAIL;
-//         }
-
-//         /* Send back the same data */
-//         httpd_resp_send_chunk(req, buf, ret);
-//         remaining -= ret;
-
-//         /* Log data received */
-//         ESP_LOGI(TAG, "=========== RECEIVED DATA ==========");
-//         ESP_LOGI(TAG, "%.*s", ret, buf);
-//         ESP_LOGI(TAG, "====================================");
-//     }
-
-//     // End response
-//     httpd_resp_send_chunk(req, NULL, 0);
-//     return ESP_OK;
-// }
 static esp_err_t sw1_post_handler(httpd_req_t *req)
 {
     char buf[100];
-
-    // gpio_set_direction(19, GPIO_MODE_OUTPUT);
-
     httpd_req_recv(req,buf,req->content_len);
     http_post_switch_callback(buf,req->content_len);
-    // printf("a: %d \n", (int)buf[0]);
-    // if((int)buf[0]==48)
-    // {
-    //     gpio_set_level(19,0);
-    // }
-    // else if((int)buf[0]==49)
-    // {
-    //     gpio_set_level(19,1);
-    // }
     httpd_resp_send_chunk(req ,NULL , 0);
     return ESP_OK;    
 }
-static const httpd_uri_t sw1_post = {
-        .uri       = "/switch1",
+static esp_err_t servo_post_handler(httpd_req_t *req)
+{
+    char buf[100];
+    httpd_req_recv(req,buf,req->content_len);
+    http_post_servo_callback(buf,req->content_len);
+    httpd_resp_send_chunk(req ,NULL , 0);
+    return ESP_OK;    
+}
+// static const httpd_uri_t sw1_post = {
+//         .uri       = "/switch1",
+//     .method    = HTTP_POST,
+//     .handler   = sw1_post_handler,
+//     .user_ctx  = NULL
+// };
+static const httpd_uri_t servo_post = {
+        .uri       = "/servo",
     .method    = HTTP_POST,
-    .handler   = sw1_post_handler,
+    .handler   = servo_post_handler,
     .user_ctx  = NULL
 };
 
@@ -405,15 +384,12 @@ esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
         httpd_register_uri_handler(server, &cloud1_svg_uri);
         httpd_register_uri_handler(server, &cloud2_svg_uri);
         httpd_register_uri_handler(server, &get_dht11);
-        httpd_register_uri_handler(server, &sw1_post);
+        // httpd_register_uri_handler(server, &sw1_post);
+        httpd_register_uri_handler(server, &logorm_uri);
+        httpd_register_uri_handler(server, &servo_post  );
         
         httpd_register_err_handler(server,HTTPD_404_NOT_FOUND,http_404_error_handler);
-        // httpd_register_uri_handler(server, &echo);
-        // httpd_register_uri_handler(server, &ctrl);
-        #if CONFIG_EXAMPLE_BASIC_AUTH
-        httpd_register_basic_auth(server);
-        #endif
-        // return server;
+
     }
     else{
     ESP_LOGI(TAG, "Error starting server!");
@@ -428,6 +404,9 @@ void stop_webserver(void)
 
 void http_set_callback_switch (void *cb){
     http_post_switch_callback = cb ;
+}
+void http_set_callback_servo (void *cb){
+    http_post_servo_callback = cb ;
 }
 void http_set_callback_dht11 (void *cb){
     http_get_dht11_callback = cb;

@@ -8,7 +8,7 @@
     <style>
       body {
         background-color: #dfe6e9;
-        font-family:'Times New Roman', Times, serif;
+        font-family:Helvetica;
         margin: 0px;
         padding: 0px;
       }
@@ -17,6 +17,7 @@
         padding: 15px ;
         color: white;
         margin: auto;
+        
       }
 
       #sun {
@@ -72,10 +73,10 @@
       }
       .box {
         width: 300px;
-        height: 150px;
-        background-color: #34ace0;
+        height: 250px;
+        background-color: #0984e3;
         border-radius: 20px;
-        border: 5px solid #227093;
+        border: 5px solid #132d65;
         box-sizing: border-box;
         display: flex;
         justify-content: left;
@@ -86,11 +87,11 @@
         padding: 10px;
       }
       input:checked + .slider {
-        background-color: #2196f3;
+        background-color: #0984e3;
       }
 
       input:focus + .slider {
-        box-shadow: 0 0 1px #2196f3;
+        box-shadow: 0 0 1px #0984e3;
       }
 
       input:checked + .slider:before {
@@ -135,7 +136,7 @@
       }
       #align4{
         position: absolute;
-        top:400px;
+        top:350px;
         left:70px;
       }
       #align5{
@@ -143,6 +144,13 @@
         top:110px;
         left:215px;
       }
+      
+      #align6{
+              position: absolute;
+              top:500px;
+              left:850px;
+      }
+
       hr{
       width: 2px;
       height: 150px;
@@ -150,9 +158,120 @@
       border-color: black;
       border-radius: 15px;
       }
-      .card { font-size:2 0px ; box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5); }
+      .card { font-size:2 0px ; box-shadow: 0 rgba(255, 255, 255, 0.5); }
+
+      .container{
+    background-color: #ffffff;
+    width: 90vmin;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 30px 20px;
+    border-radius: 5px;
+}
+input[type="range"]{
+    position: relative;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    display: block;
+    width: 80%;
+    height: 8px;
+    background-color: #d5d5d5;
+    border-radius: 8px;
+    outline: none;
+}
+input[type="range"]::-webkit-slider-runnable-track{
+    -webkit-appearance: none;
+    height: 8px;
+}
+input[type="range"]::-moz-track{
+    -moz-appearance: none;
+    height: 8px;
+}
+input[type="range"]::-ms-track{
+    appearance: none;
+    height: 8px;
+}
+input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    background-color: #0984e3;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -6px;
+    border: none;
+}
+
+input[type="range"]::-ms-thumb{
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    background-color: #0984e3;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -6px;
+    border: none;
+}
+input[type="range"]:active::-webkit-slider-thumb{
+    background-color: #ffffff;
+    border: 3px solid #0984e3;
+}
+#slider-value{
+    width: 13%;
+    position: relative;
+    background-color: #0984e3;
+    color: #ffffff;
+    text-align: center;
+    font-family: "Roboto Mono",monospace;
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+.d-flex{
+  display: flex;
+}
+.justify-content-between{
+  justify-content: space-between;
+}
+.align-items-center{
+  align-items: center;
+}
+
+#header{
+  background: #132d65;
+  padding: 15px 0px;
+}
+#header #logo{
+  color: #fff;
+  text-decoration: none;
+  font-size: 30px;
+  font-weight: 600;
+  padding-left: 20px;
+}
+
     </style>
-    <h1>Embedded System Programming - Group 2</h1>
+
+    <div id="header">
+        <div class="container2 d-flex justify-content-between align-items-center">
+        <a href="" id="logo">Embedded System Programming - Group 2</a>
+        <div class="logotruong">
+          <a class="logobk" href="https://hcmut.edu.vn/" style="text-decoration: none;vertical-align: middle;">
+            <img src="logorm.png" style="height: 60px; margin-right: 6px; position:fixed ; right: 290px; top: 2px;">
+          <div class="title-truong" style="margin-right: 20px;">
+            <div class="title-faculity" style="white-space: nowrap; color:#fff;font-size: 12px; text-align: left; display: block;">ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH
+            </div>
+            <div class="title-school" style="white-space: nowrap;color:#fff;font-size: 16px; text-align: left;  display: block;">TRƯỜNG ĐẠI HỌC BÁCH KHOA
+            </div>
+          </div>
+        </a>
+        </div>
+        </div>
+    </div>
     <h2 id="align1">
       Trời nắng<br />
       <img id="sun" src="white.svg" alt="Sun" />
@@ -163,51 +282,63 @@
     </h2>
     <hr id="align5">
     <h2 id="align31">
+      Che nắng&nbsp
       <label class="switch">
         <input type="checkbox" />
         <span class="slider"></span>
       </label>
-      Che nắng
+      
     </h2>
     <h2 id="align32">
+      Che mưa&nbsp
       <label class="switch">
         <input type="checkbox" />
         <span class="slider"></span>
       </label>
-      Che mưa
+      
     </h2>
     <h2 id="align33">
+      Phun sương&nbsp
       <label class="switch">
         <input type="checkbox" />
         <span class="slider"></span>
       </label>
-      Phun sương
+      
     </h2>
     <h2 id="align34">
+      Bật đèn&nbsp
       <label class="switch">
         <input type="checkbox" />
         <span class="slider"></span>
       </label>
-      Bật đèn
+      
     </h2>
     <h2 id="align35">
+      Cho ăn&nbsp
       <label class="switch" id="switch1">
         <input type="checkbox" checked id="myCheck1" onclick="myfunction1()">
         <span class="slider"></span>
       </label>
-      Cho ăn
+      
     </h2>
     <div  id="align4" class="box">
       <div class="cards">
         <div class="card temperature">
-          <p class="card-title"> TEMPERATURE </p><span id="t1"></span> &deg;C</span> <span id="rt1"> </span></p>
+          <p class="card-title"> TEMPERATURE <span id="t1"></span> &deg;C</span> <span id="rt1"> </span></p> </p>
         </div>
         <div class="card humidity">  
-          <p class="card-title"> HUMIDITY </p><span id="h1"></span> &percnt;</span> <span id="rH1"> </span></p>
+          <p class="card-title"> HUMIDITY <span id="h1"></span> &percnt;</span> <span id="rH1"> </span></p> </p>
         </div>
       </div>
     </div>
-    
+        <h2>
+          <label class="container"  id="align6">
+           <p>Phun&nbsp<br>sương&nbsp</p>
+      <input type="range" id="my-slider" min="0" max="100" value="50" oninput="slider()">
+      <div id="slider-value">0</div>
+          </lable>
+        </h2>
+ 
   </body>
   <script>
     
@@ -235,6 +366,7 @@
       xhttp1.open("GET", "/dht11", true);
       xhttp1.send();
     }, 1000 );
+    
     const sun = document.querySelector("#sun");
     let isNight = false;
     sun.addEventListener("click", function () {
@@ -260,6 +392,17 @@
         cloud.setAttribute("src", cloud1);
       }
     };
+
+const mySlider = document.getElementById("my-slider");
+const sliderValue = document.getElementById("slider-value");
+function slider(){
+    valPercent = (mySlider.value / mySlider.max)*100;
+    mySlider.style.background = `linear-gradient(to right, #0984e3 ${valPercent}%, #d5d5d5 ${valPercent}%)`;
+    sliderValue.textContent = mySlider.value;
+    xhttp1.open("POST", "/servo",true);
+    xhttp1.send(mySlider.value);
+}
+slider();
   </script>
 </html>
   
