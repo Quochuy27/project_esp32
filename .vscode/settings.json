@@ -9,5 +9,6 @@
         "esp_eth.h": "c",
         "http_server.h": "c",
         "pwm.h": "c"
-    }
+    },
+    "liveServer.settings.multiRootWorkspaceName": "station"
 }

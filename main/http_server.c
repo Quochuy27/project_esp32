@@ -197,7 +197,6 @@ static esp_err_t get_cloud1_svg_handler(httpd_req_t *req)
     httpd_resp_send(req, (const char *)cloud1_svg_start, cloud1_svg_end - cloud1_svg_start);
     return ESP_OK;
 }
-
 static esp_err_t get_cloud2_svg_handler(httpd_req_t *req)
 {
     httpd_resp_set_type(req, "image/svg+xml");
@@ -238,13 +237,12 @@ static const httpd_uri_t logorm_uri = {
 
     .user_ctx  = NULL
 };
+
 httpd_uri_t black_svg_uri = {
     .uri      = "/black.svg",
     .method   = HTTP_GET,
     .handler  = get_black_svg_handler,
 };
-
-
 
 httpd_uri_t white_svg_uri = {
     .uri      = "/white.svg",
@@ -259,8 +257,6 @@ httpd_uri_t cloud1_svg_uri = {
     .method   = HTTP_GET,
     .handler  = get_cloud1_svg_handler,
 };
-
-
 
 httpd_uri_t cloud2_svg_uri = {
     .uri      = "/cloud2.svg",
@@ -283,8 +279,14 @@ static esp_err_t servo_post_handler(httpd_req_t *req)
     httpd_resp_send_chunk(req ,NULL , 0);
     return ESP_OK;    
 }
+static const httpd_uri_t sw1_post = {
+        .uri       = "/switch1",
+    .method    = HTTP_POST,
+    .handler   = sw1_post_handler,
+    .user_ctx  = NULL
+};
 // static const httpd_uri_t sw1_post = {
-//         .uri       = "/switch1",
+//         .uri       = "/switch2",
 //     .method    = HTTP_POST,
 //     .handler   = sw1_post_handler,
 //     .user_ctx  = NULL
@@ -296,83 +298,25 @@ static const httpd_uri_t servo_post = {
     .user_ctx  = NULL
 };
 
-/* This handler allows the custom error handling functionality to be
- * tested from client side. For that, when a PUT request 0 is sent to
- * URI /ctrl, the /hello and /echo URIs are unregistered and following
- * custom error handler http_404_error_handler() is registered.
- * Afterwards, when /hello or /echo is requested, this custom error
- * handler is invoked which, after sending an error message to client,
- * either closes the underlying socket (when requested URI is /echo)
- * or keeps it open (when requested URI is /hello). This allows the
- * client to infer if the custom error handler is functioning as expected
- * by observing the socket state.
- */
 esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
 {
     if (strcmp("/hello", req->uri) == 0) {
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "/hello URI is not available");
-        /* Return ESP_OK to keep underlying socket open */
         return ESP_OK;
     }
-    //  else if (strcmp("/echo", req->uri) == 0) {
-    //     httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "/echo URI is not available");
-    //     /* Return ESP_FAIL to close underlying socket */
-    //     return ESP_FAIL;
-    // }
-    /* For any other URI send 404 and close socket */
+
     httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Some 404 error message");
     return ESP_FAIL;
 }
 
-/* An HTTP PUT handler. This demonstrates realtime
- * registration and deregistration of URI handlers
- */
-// static esp_err_t ctrl_put_handler(httpd_req_t *req)
-// {
-//     char buf;
-//     int ret;
 
-//     if ((ret = httpd_req_recv(req, &buf, 1)) <= 0) {
-//         if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
-//             httpd_resp_send_408(req);
-//         }
-//         return ESP_FAIL;
-//     }
-
-//     if (buf == '0') {
-//         /* URI handlers can be unregistered using the uri string */
-//         ESP_LOGI(TAG, "Unregistering /hello and /echo URIs");
-//         httpd_unregister_uri(req->handle, "/hello");
-//         httpd_unregister_uri(req->handle, "/echo");
-//         /* Register the custom error handler */
-//         httpd_register_err_handler(req->handle, HTTPD_404_NOT_FOUND, http_404_error_handler);
-//     }
-//     else {
-//         ESP_LOGI(TAG, "Registering /hello and /echo URIs");
-//         httpd_register_uri_handler(req->handle, &hello);
-//         httpd_register_uri_handler(req->handle, &echo);
-//         /* Unregister custom error handler */
-//         httpd_register_err_handler(req->handle, HTTPD_404_NOT_FOUND, NULL);
-//     }
-
-//     /* Respond with empty body */
-//     httpd_resp_send(req, NULL, 0);
-//     return ESP_OK;
-// }
-
-// static const httpd_uri_t ctrl = {
-//     .uri       = "/ctrl",
-//     .method    = HTTP_PUT,
-//     .handler   = ctrl_put_handler,
-//     .user_ctx  = NULL
-// };
 
  void  start_webserver(void)
 {
     // httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.lru_purge_enable = true;
-
+    config.max_uri_handlers=18;
     // Start the httpd server
     ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
@@ -384,7 +328,7 @@ esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
         httpd_register_uri_handler(server, &cloud1_svg_uri);
         httpd_register_uri_handler(server, &cloud2_svg_uri);
         httpd_register_uri_handler(server, &get_dht11);
-        // httpd_register_uri_handler(server, &sw1_post);
+        httpd_register_uri_handler(server, &sw1_post);
         httpd_register_uri_handler(server, &logorm_uri);
         httpd_register_uri_handler(server, &servo_post  );
         
@@ -411,4 +355,3 @@ void http_set_callback_servo (void *cb){
 void http_set_callback_dht11 (void *cb){
     http_get_dht11_callback = cb;
 }
-

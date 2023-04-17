@@ -51,7 +51,8 @@
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
 static struct dht11_reading dht11_last_data , dht11_cur_data;
-/* The event group allows multiple bits for each event, but we only care about two events:
+/* The event group allows 
+ bits for each event, but we only care about two events:
  * - we are connected to the AP with an IP
  * - we failed to connect after the maximum amount of retries */
 #define WIFI_CONNECTED_BIT BIT0
@@ -163,14 +164,25 @@ void servo_data_callback(char *data, int len)
 void switch_data_callback(char *data, uint16_t len)
 {
     gpio_set_direction(18,GPIO_MODE_OUTPUT);
+    gpio_set_direction(25,GPIO_MODE_OUTPUT);
+    gpio_set_direction(26,GPIO_MODE_OUTPUT);
+    gpio_set_direction(27,GPIO_MODE_OUTPUT);
+    gpio_set_direction(23,GPIO_MODE_OUTPUT);
+    gpio_set_direction(17,GPIO_MODE_INPUT);
     
     if(*data=='1')
     {
-        gpio_set_level(18,1);
+        gpio_set_level(25,1);
+        gpio_set_level(26,1);
+        gpio_set_level(27,1);
+       // gpio_set_level(23,1);
     }
     else if(*data=='0')
     {
-        gpio_set_level(18,0);
+        gpio_set_level(25,0);
+        gpio_set_level(26,0);
+        gpio_set_level(27,0);
+       // gpio_set_level(23,0);
     }
 
 }
@@ -198,7 +210,12 @@ void app_main(void)
     wifi_init_sta();
     start_webserver();
     while(1)
-    {
+    {   if(gpio_get_level(17)==1)
+        gpio_set_level(23,0);
+        else
+        {
+            gpio_set_level(23,1);
+        }
         dht11_cur_data=DHT11_read();
         if(dht11_cur_data.status==0)
         {
