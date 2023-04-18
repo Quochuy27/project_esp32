@@ -8,6 +8,8 @@ void stop_webserver(void);
 void http_set_callback_switch1(void *cb);
 void http_set_callback_switch2(void *cb);
 void http_set_callback_dht11(void *cb);
+void http_set_callback_rain(void *cb);
 void dht11_response(char *data, int len);
+void rain_response(char *data, int len);
 void http_set_callback_servo (void *cb);
 #endif

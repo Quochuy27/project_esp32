@@ -186,6 +186,13 @@ void switch2_data_callback(char *data, uint16_t len)
     }
 
 }
+void rain_data_callback(void)
+{   int a = gpio_get_level(17);
+    char resp[100];
+    sprintf(resp,"{\"%d\"}",a);
+    rain_response(resp,strlen(resp));
+    printf("%s",resp);
+}
 void dht11_data_callback(void)
 {   
     char resp[100];
@@ -202,6 +209,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
     http_set_callback_switch2(switch2_data_callback);
+    
     http_set_callback_dht11(dht11_data_callback);
     http_set_callback_servo(servo_data_callback);
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
@@ -210,7 +218,7 @@ void app_main(void)
     wifi_init_sta();
     start_webserver();
     while(1)
-    {  
+    {  rain_data_callback();
         dht11_cur_data=DHT11_read();
         if(dht11_cur_data.status==0)
         {

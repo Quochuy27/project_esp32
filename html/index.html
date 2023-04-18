@@ -373,7 +373,13 @@ input[type="range"]:active::-webkit-slider-thumb{
       var element2 = document.getElementById('h1');
       element2.innerText = obj.humidity; 
     }
-    
+    xhttp1.onreadystatechange = function() {
+      const obj =JSON.parse( this.responseText);
+      var element1 = document.getElementById('t1');
+      element1.innerText = obj.temperature;
+      var element2 = document.getElementById('h1');
+      element2.innerText = obj.humidity; 
+    }
     setInterval(function() {
       xhttp1.open("GET", "/dht11", true);
       xhttp1.send();
