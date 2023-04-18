@@ -309,7 +309,7 @@ input[type="range"]:active::-webkit-slider-thumb{
     <h2 id="align34">
       Bật đèn&nbsp
       <label class="switch">
-        <input type="checkbox" />
+        <input type="checkbox" checked id="myCheck2" onclick="myfunction3()">
         <span class="slider"></span>
       </label>
       
@@ -352,6 +352,17 @@ input[type="range"]:active::-webkit-slider-thumb{
       }
       else{
         xhttp1.open("POST", "/switch1", true);
+        xhttp1.send("0");        
+      }       
+    }
+    function myfunction3(){
+      var checkBox = document.getElementById("myCheck2");
+      if (checkBox.checked == true){
+        xhttp1.open("POST", "/switch2", true);
+        xhttp1.send("1");
+      }
+      else{
+        xhttp1.open("POST", "/switch2", true);
         xhttp1.send("0");        
       }       
     }

@@ -161,7 +161,7 @@ void servo_data_callback(char *data, int len)
     pwm_set_duty(0,8.15*duty+205);
     printf("%f \n",8.15*duty+205);
 }
-void switch_data_callback(char *data, uint16_t len)
+void switch2_data_callback(char *data, uint16_t len)
 {
     gpio_set_direction(18,GPIO_MODE_OUTPUT);
     gpio_set_direction(25,GPIO_MODE_OUTPUT);
@@ -201,7 +201,7 @@ void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    http_set_callback_switch(switch_data_callback);
+    http_set_callback_switch2(switch2_data_callback);
     http_set_callback_dht11(dht11_data_callback);
     http_set_callback_servo(servo_data_callback);
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
@@ -210,12 +210,7 @@ void app_main(void)
     wifi_init_sta();
     start_webserver();
     while(1)
-    {   if(gpio_get_level(17)==1)
-        gpio_set_level(23,0);
-        else
-        {
-            gpio_set_level(23,1);
-        }
+    {  
         dht11_cur_data=DHT11_read();
         if(dht11_cur_data.status==0)
         {
