@@ -372,6 +372,20 @@ input[type="range"]:active::-webkit-slider-thumb{
       element1.innerText = obj.temperature;
       var element2 = document.getElementById('h1');
       element2.innerText = obj.humidity; 
+      var cloud = document.getElementById("cloud");
+      const sun = document.querySelector("#sun");
+      let isNight = false;
+      if (obj.rain === "0") {
+      sun.setAttribute("src", "white.svg");
+      sun.style.transform = "rotate(180deg)";
+      cloud.setAttribute("src", "cloud2.svg")
+      isNight = true;
+    } else {
+      sun.setAttribute("src", "black.svg");
+      sun.style.transform = "rotate(0deg)";
+      cloud.setAttribute("src", "cloud1.svg");
+      isNight = false;
+    }
     }
     
     setInterval(function() {
@@ -379,31 +393,8 @@ input[type="range"]:active::-webkit-slider-thumb{
       xhttp1.send();
     }, 1000 );
     
-    const sun = document.querySelector("#sun");
-    let isNight = false;
-    sun.addEventListener("click", function () {
-      if (isNight) {
-        sun.setAttribute("src", "white.svg");
-        sun.style.transform = "rotate(0deg)";
-        isNight = false;
-      } else {
-        sun.setAttribute("src", "black.svg");
-        sun.style.transform = "rotate(180deg)";
-        isNight = true;
-      }
-    });
-    var cloud = document.getElementById("cloud");
-    var cloud1 = "cloud1.svg";
-    var cloud2 = "cloud2.svg";
 
-    cloud.onclick = function () {
-      if (cloud.getAttribute("src") == cloud1) {
-        cloud.setAttribute("src", cloud2);
-        cloud.style.transform = ease;
-      } else {
-        cloud.setAttribute("src", cloud1);
-      }
-    };
+
 
 const mySlider = document.getElementById("my-slider");
 const sliderValue = document.getElementById("slider-value");
