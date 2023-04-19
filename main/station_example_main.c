@@ -175,6 +175,7 @@ void switch2_data_callback(char *data, uint16_t len)
         gpio_set_level(25,1);
         gpio_set_level(26,1);
         gpio_set_level(27,1);
+        gpio_set_level(23,1);
        // gpio_set_level(23,1);
     }
     else if(*data=='0')
@@ -182,7 +183,7 @@ void switch2_data_callback(char *data, uint16_t len)
         gpio_set_level(25,0);
         gpio_set_level(26,0);
         gpio_set_level(27,0);
-       // gpio_set_level(23,0);
+       gpio_set_level(23,0);
     }
 
 }
@@ -194,9 +195,9 @@ void rain_data_callback(void)
     printf("%s",resp);
 }
 void dht11_data_callback(void)
-{   
+{   int rain = gpio_get_level(17);
     char resp[100];
-    sprintf(resp,"{\"temperature\": \"%.1f\",\"humidity\":\"%.1f\"}",dht11_last_data.temperature,dht11_last_data.humidity);
+    sprintf(resp,"{\"rain\": \"%d\",\"temperature\": \"%.1f\",\"humidity\":\"%.1f\"}",rain,dht11_last_data.temperature,dht11_last_data.humidity);
     dht11_response(resp,strlen(resp));
 }
 void app_main(void)
@@ -218,12 +219,12 @@ void app_main(void)
     wifi_init_sta();
     start_webserver();
     while(1)
-    {  rain_data_callback();
+    {  
         dht11_cur_data=DHT11_read();
         if(dht11_cur_data.status==0)
         {
             dht11_last_data=dht11_cur_data;
-            printf("a=%lf\n",dht11_last_data.humidity );
+           
         }
         vTaskDelay(500/portTICK_PERIOD_MS);
     }
