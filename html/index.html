@@ -117,23 +117,23 @@
       }
       #align32{
         position: absolute;
-        top:250px;
-        left:800px;
+        top:200px;
+        left:680px;
       }
       #align33{
         position: absolute;
-        top:250px;
-        left:1050px;
+        top:200px;
+        left:900px;
       }
       #align34{
         position: absolute;
-        top:350px;
+        top:300px;
         left:700px;
       }
       #align35{
         position: absolute;
-        top:350px;
-        left:900px;
+        top:300px;
+        left:960px;
       }
       #align4{
         position: absolute;
@@ -282,18 +282,11 @@ input[type="range"]:active::-webkit-slider-thumb{
       <img id="cloud" class="cloud" src="cloud1.svg" />
     </h2>
     <hr id="align5">
-    <h2 id="align31">
-      Che nắng&nbsp
-      <label class="switch">
-        <input type="checkbox" />
-        <span class="slider"></span>
-      </label>
-      
-    </h2>
+
     <h2 id="align32">
       Che mưa&nbsp
       <label class="switch">
-        <input type="checkbox" />
+        <input type="checkbox" checked id="myCheck3" onclick="myfunction3()">
         <span class="slider"></span>
       </label>
       
@@ -301,7 +294,7 @@ input[type="range"]:active::-webkit-slider-thumb{
     <h2 id="align33">
       Phun sương&nbsp
       <label class="switch">
-        <input type="checkbox" />
+        <input type="checkbox" checked id="myCheck4" onclick="myfunction4()">
         <span class="slider"></span>
       </label>
       
@@ -309,7 +302,7 @@ input[type="range"]:active::-webkit-slider-thumb{
     <h2 id="align34">
       Bật đèn&nbsp
       <label class="switch">
-        <input type="checkbox" checked id="myCheck2" onclick="myfunction3()">
+        <input type="checkbox" checked id="myCheck2" onclick="myfunction2()">
         <span class="slider"></span>
       </label>
       
@@ -355,7 +348,7 @@ input[type="range"]:active::-webkit-slider-thumb{
         xhttp1.send("0");        
       }       
     }
-    function myfunction3(){
+    function myfunction2(){
       var checkBox = document.getElementById("myCheck2");
       if (checkBox.checked == true){
         xhttp1.open("POST", "/switch2", true);
@@ -366,6 +359,29 @@ input[type="range"]:active::-webkit-slider-thumb{
         xhttp1.send("0");        
       }       
     }
+    function myfunction3(){
+      var checkBox = document.getElementById("myCheck3");
+      if (checkBox.checked == true){
+        xhttp1.open("POST", "/switch3", true);
+        xhttp1.send("1");
+      }
+      else{
+        xhttp1.open("POST", "/switch3", true);
+        xhttp1.send("0");        
+      }       
+    }
+    function myfunction4(){
+      var checkBox = document.getElementById("myCheck4");
+      if (checkBox.checked == true){
+        xhttp1.open("POST", "/switch4", true);
+        xhttp1.send("1");
+      }
+      else{
+        xhttp1.open("POST", "/switch4", true);
+        xhttp1.send("0");        
+      }       
+    }
+
     xhttp1.onreadystatechange = function() {
       const obj =JSON.parse( this.responseText);
       var element1 = document.getElementById('t1');
