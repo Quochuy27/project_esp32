@@ -293,7 +293,7 @@ input[type="range"]:active::-webkit-slider-thumb{
     <h2 id="align32">
       Che mưa&nbsp
       <label class="switch">
-        <input type="checkbox" />
+        <input type="checkbox" checked id="myCheck4" onclick="myfunction4()">
         <span class="slider"></span>
       </label>
       
@@ -301,7 +301,7 @@ input[type="range"]:active::-webkit-slider-thumb{
     <h2 id="align33">
       Phun sương&nbsp
       <label class="switch">
-        <input type="checkbox" />
+        <input type="checkbox" checked id="myCheck3" onclick="myfunction3()">
         <span class="slider"></span>
       </label>
       
@@ -309,7 +309,7 @@ input[type="range"]:active::-webkit-slider-thumb{
     <h2 id="align34">
       Bật đèn&nbsp
       <label class="switch">
-        <input type="checkbox" checked id="myCheck2" onclick="myfunction3()">
+        <input type="checkbox" checked id="myCheck2" onclick="myfunction2()">
         <span class="slider"></span>
       </label>
       
@@ -355,7 +355,7 @@ input[type="range"]:active::-webkit-slider-thumb{
         xhttp1.send("0");        
       }       
     }
-    function myfunction3(){
+    function myfunction2(){
       var checkBox = document.getElementById("myCheck2");
       if (checkBox.checked == true){
         xhttp1.open("POST", "/switch2", true);
@@ -363,6 +363,28 @@ input[type="range"]:active::-webkit-slider-thumb{
       }
       else{
         xhttp1.open("POST", "/switch2", true);
+        xhttp1.send("0");        
+      }       
+    }
+    function myfunction3(){
+      var checkBox = document.getElementById("myCheck3");
+      if (checkBox.checked == true){
+        xhttp1.open("POST", "/switch3", true);
+        xhttp1.send("1");
+      }
+      else{
+        xhttp1.open("POST", "/switch3", true);
+        xhttp1.send("0");        
+      }       
+    }
+    function myfunction4(){
+      var checkBox = document.getElementById("myCheck4");
+      if (checkBox.checked == true){
+        xhttp1.open("POST", "/switch4", true);
+        xhttp1.send("1");
+      }
+      else{
+        xhttp1.open("POST", "/switch4", true);
         xhttp1.send("0");        
       }       
     }

@@ -161,43 +161,68 @@ void servo_data_callback(char *data, int len)
     pwm_set_duty(0,8.15*duty+205);
     printf("%f \n",8.15*duty+205);
 }
-void switch2_data_callback(char *data, uint16_t len)
+void switch1_data_callback(char *data, uint16_t len)
 {
-    gpio_set_direction(18,GPIO_MODE_OUTPUT);
-    gpio_set_direction(25,GPIO_MODE_OUTPUT);
-    gpio_set_direction(26,GPIO_MODE_OUTPUT);
-    gpio_set_direction(27,GPIO_MODE_OUTPUT);
-    gpio_set_direction(23,GPIO_MODE_OUTPUT);
-    gpio_set_direction(17,GPIO_MODE_INPUT);
-    
+    pwm_timer_init(50);
+    pwm_chanel_config(GPIO_NUM_5,0);
     if(*data=='1')
     {
-        gpio_set_level(25,1);
-        gpio_set_level(26,1);
-        gpio_set_level(27,1);
-        gpio_set_level(23,1);
-       // gpio_set_level(23,1);
+    pwm_set_duty(0,8.15*0+205);
     }
     else if(*data=='0')
     {
-        gpio_set_level(25,0);
-        gpio_set_level(26,0);
-        gpio_set_level(27,0);
-       gpio_set_level(23,0);
+    pwm_set_duty(0,8.15*100+205);
     }
 
 }
-void rain_data_callback(void)
-{   int a = gpio_get_level(17);
-    char resp[100];
-    sprintf(resp,"{\"%d\"}",a);
-    rain_response(resp,strlen(resp));
-    printf("%s",resp);
+void switch2_data_callback(char *data, uint16_t len)
+{
+
+    gpio_set_direction(25,GPIO_MODE_OUTPUT);
+    if(*data=='1')
+    {
+      gpio_set_level(25,0);  
+    }
+    else if(*data=='0')
+    {
+      gpio_set_level(25,1);
+    }
+
+}
+void switch3_data_callback(char *data, uint16_t len)
+{
+
+    gpio_set_direction(23,GPIO_MODE_OUTPUT);
+    if(*data=='1')
+    {
+      gpio_set_level(23,0);  
+    }
+    else if(*data=='0')
+    {
+      gpio_set_level(23,1);
+    }
+
+}
+void switch4_data_callback(char *data, uint16_t len)
+{
+
+    
+    pwm_timer_init(50);
+    pwm_chanel_config(GPIO_NUM_16,0);
+    if(*data=='1')
+    {
+    pwm_set_duty(0,8.15*0+205);
+    }
+    else if(*data=='0')
+    {
+    pwm_set_duty(0,8.15*100+205);
+    }
+
 }
 void dht11_data_callback(void)
 {   int rain = gpio_get_level(17);
     char resp[100];
-    sprintf(resp,"{\"rain\": \"%d\",\"temperature\": \"%.1f\",\"humidity\":\"%.1f\"}",rain,dht11_last_data.temperature,dht11_last_data.humidity);
+        sprintf(resp,"{\"rain\": \"%d\",\"temperature\": \"%.1f\",\"humidity\":\"%.1f\"}",rain,dht11_last_data.temperature,dht11_last_data.humidity);
     dht11_response(resp,strlen(resp));
 }
 void app_main(void)
@@ -209,8 +234,10 @@ void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+    http_set_callback_switch1(switch1_data_callback);
     http_set_callback_switch2(switch2_data_callback);
-    
+    http_set_callback_switch3(switch3_data_callback);
+    http_set_callback_switch4(switch4_data_callback);
     http_set_callback_dht11(dht11_data_callback);
     http_set_callback_servo(servo_data_callback);
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");

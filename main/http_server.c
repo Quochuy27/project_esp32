@@ -43,9 +43,11 @@ extern const uint8_t logorm_start[] asm("_binary_logorm_png_start");
 extern const uint8_t logorm_end[] asm("_binary_logorm_png_end");
 static http_post_callback_t http_post_switch1_callback =NULL;
 static http_post_callback_t http_post_switch2_callback =NULL;
+static http_post_callback_t http_post_switch3_callback =NULL;
+static http_post_callback_t http_post_switch4_callback =NULL;
 static http_get_callback_t  http_get_dht11_callback = NULL; 
 static http_post_callback_t http_post_servo_callback = NULL;
-static http_get_callback_t http_get_rain_callback = NULL;
+
 
 /* An HTTP GET handler */
 static esp_err_t hello_get_handler(httpd_req_t *req)
@@ -94,16 +96,7 @@ static esp_err_t get_data_dht11_handler(httpd_req_t *req)
     http_get_dht11_callback();
     return ESP_OK;
 }
-static esp_err_t get_data_rain_handler(httpd_req_t *req)
-{   
-    reg=req;
-    http_get_rain_callback();
-    return ESP_OK;
-}
-void rain_response(char *data, int len)
-{
-    httpd_resp_send(reg , data ,len);
-}
+
 void dht11_response(char *data, int len)
 {
     httpd_resp_send(reg , data ,len);
@@ -116,13 +109,7 @@ static const httpd_uri_t get_dht11 = {
 
     .user_ctx  = NULL
 };
-static const httpd_uri_t get_rain = {
-    .uri       = "/rain",
-    .method    = HTTP_GET,
-    .handler   = get_data_rain_handler,
 
-    .user_ctx  = NULL
-};
 static const httpd_uri_t get_hello = {
     .uri       = "/chao",
     .method    = HTTP_GET,
@@ -177,6 +164,22 @@ static esp_err_t sw2_post_handler(httpd_req_t *req)
     httpd_resp_send_chunk(req ,NULL , 0);
     return ESP_OK;    
 }
+static esp_err_t sw3_post_handler(httpd_req_t *req)
+{
+    char buf[100];
+    httpd_req_recv(req,buf,req->content_len);
+    http_post_switch3_callback(buf,req->content_len);
+    httpd_resp_send_chunk(req ,NULL , 0);
+    return ESP_OK;    
+}
+static esp_err_t sw4_post_handler(httpd_req_t *req)
+{
+    char buf[100];
+    httpd_req_recv(req,buf,req->content_len);
+    http_post_switch4_callback(buf,req->content_len);
+    httpd_resp_send_chunk(req ,NULL , 0);
+    return ESP_OK;    
+}
 static esp_err_t servo_post_handler(httpd_req_t *req)
 {
     char buf[100];
@@ -195,6 +198,18 @@ static const httpd_uri_t sw2_post = {
         .uri       = "/switch2",
     .method    = HTTP_POST,
     .handler   = sw2_post_handler,
+    .user_ctx  = NULL
+};
+static const httpd_uri_t sw3_post = {
+        .uri       = "/switch3",
+    .method    = HTTP_POST,
+    .handler   = sw3_post_handler,
+    .user_ctx  = NULL
+};
+static const httpd_uri_t sw4_post = {
+        .uri       = "/switch4",
+    .method    = HTTP_POST,
+    .handler   = sw4_post_handler,
     .user_ctx  = NULL
 };
 static const httpd_uri_t servo_post = {
@@ -231,9 +246,10 @@ esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
         httpd_register_uri_handler(server, &cloud1_svg_uri);
         httpd_register_uri_handler(server, &cloud2_svg_uri);
         httpd_register_uri_handler(server, &get_dht11);
-        httpd_register_uri_handler(server, &get_rain);
         httpd_register_uri_handler(server, &sw1_post);
         httpd_register_uri_handler(server, &sw2_post);
+        httpd_register_uri_handler(server, &sw3_post);
+        httpd_register_uri_handler(server, &sw4_post);
         httpd_register_uri_handler(server, &logorm_uri);
         httpd_register_uri_handler(server, &servo_post  );       
         httpd_register_err_handler(server,HTTPD_404_NOT_FOUND,http_404_error_handler);
@@ -255,12 +271,15 @@ void http_set_callback_switch1 (void *cb){
 void http_set_callback_switch2 (void *cb){
     http_post_switch2_callback = cb ;
 }
+void http_set_callback_switch3 (void *cb){
+    http_post_switch3_callback = cb ;
+}
+void http_set_callback_switch4 (void *cb){
+    http_post_switch4_callback = cb ;
+}
 void http_set_callback_servo (void *cb){
     http_post_servo_callback = cb ;
 }
 void http_set_callback_dht11 (void *cb){
     http_get_dht11_callback = cb;
-}
-void http_set_callback_rain (void *cb){
-    http_get_rain_callback = cb;
 }
