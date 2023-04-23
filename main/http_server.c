@@ -46,7 +46,7 @@ static http_post_callback_t http_post_switch2_callback =NULL;
 static http_post_callback_t http_post_switch3_callback =NULL;
 static http_post_callback_t http_post_switch4_callback =NULL;
 static http_get_callback_t  http_get_dht11_callback = NULL; 
-static http_post_callback_t http_post_servo_callback = NULL;
+// static http_post_callback_t http_post_servo_callback = NULL;
 
 
 /* An HTTP GET handler */
@@ -180,14 +180,14 @@ static esp_err_t sw4_post_handler(httpd_req_t *req)
     httpd_resp_send_chunk(req ,NULL , 0);
     return ESP_OK;    
 }
-static esp_err_t servo_post_handler(httpd_req_t *req)
-{
-    char buf[100];
-    httpd_req_recv(req,buf,req->content_len);
-    http_post_servo_callback(buf,req->content_len);
-    httpd_resp_send_chunk(req ,NULL , 0);
-    return ESP_OK;    
-}
+// static esp_err_t servo_post_handler(httpd_req_t *req)
+// {
+//     char buf[100];
+//     httpd_req_recv(req,buf,req->content_len);
+//     http_post_servo_callback(buf,req->content_len);
+//     httpd_resp_send_chunk(req ,NULL , 0);
+//     return ESP_OK;    
+// }
 static const httpd_uri_t sw1_post = {
         .uri       = "/switch1",
     .method    = HTTP_POST,
@@ -212,12 +212,12 @@ static const httpd_uri_t sw4_post = {
     .handler   = sw4_post_handler,
     .user_ctx  = NULL
 };
-static const httpd_uri_t servo_post = {
-        .uri       = "/servo",
-    .method    = HTTP_POST,
-    .handler   = servo_post_handler,
-    .user_ctx  = NULL
-};
+// static const httpd_uri_t servo_post = {
+//         .uri       = "/servo",
+//     .method    = HTTP_POST,
+//     .handler   = servo_post_handler,
+//     .user_ctx  = NULL
+// };
 
 esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
 {
@@ -251,7 +251,7 @@ esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
         httpd_register_uri_handler(server, &sw3_post);
         httpd_register_uri_handler(server, &sw4_post);
         httpd_register_uri_handler(server, &logorm_uri);
-        httpd_register_uri_handler(server, &servo_post  );       
+        // httpd_register_uri_handler(server, &servo_post  );       
         httpd_register_err_handler(server,HTTPD_404_NOT_FOUND,http_404_error_handler);
     }
     else{
@@ -277,9 +277,9 @@ void http_set_callback_switch3 (void *cb){
 void http_set_callback_switch4 (void *cb){
     http_post_switch4_callback = cb ;
 }
-void http_set_callback_servo (void *cb){
-    http_post_servo_callback = cb ;
-}
+// void http_set_callback_servo (void *cb){
+//     http_post_servo_callback = cb ;
+// }
 void http_set_callback_dht11 (void *cb){
     http_get_dht11_callback = cb;
 }

@@ -11,5 +11,5 @@ void http_set_callback_switch3(void *cb);
 void http_set_callback_switch4(void *cb);
 void http_set_callback_dht11(void *cb);
 void dht11_response(char *data, int len);
-void http_set_callback_servo (void *cb);
+// void http_set_callback_servo (void *cb);
 #endif
